@@ -4,24 +4,19 @@ SETLOCAL
 REM -- Define el directorio base donde se encuentran los scripts Python
 set BASE_DIR=%~dp0
 
-REM -- Establecer la ruta al entorno virtual y al script de Python
-set VENV_PATH=%BASE_DIR%venv\Scripts\python
+REM -- Establecer la ruta al directorio del entorno virtual
+set VENV_DIR=%BASE_DIR%venv
 
-REM -- Comprobar si el entorno virtual existe
-if not exist "%VENV_PATH%" (
+REM -- Comprobar si el directorio del entorno virtual existe
+if not exist "%VENV_DIR%" (
     echo Virtual environment not found. Installing...
     python %BASE_DIR%installer.py
-) else (
-    REM -- Comprobar si PyTube está instalado en el entorno virtual
-    %VENV_PATH% -c "import pytube" 2>NUL
-    if errorlevel 1 (
-        echo PyTube is not installed in the virtual environment. Reinstalling...
-        python %BASE_DIR%installer.py
-    ) else (
-        echo Virtual environment and PyTube found. Running the downloader...
-        call %VENV_PATH% %BASE_DIR%run.py
-    )
 )
+
+REM -- Ejecutar run.py usando el entorno virtual activado
+echo Running the downloader...
+call %BASE_DIR%venv\Scripts\activate
+call %VENV_DIR%\Scripts\python %BASE_DIR%run.py
 
 pause
 ENDLOCAL
