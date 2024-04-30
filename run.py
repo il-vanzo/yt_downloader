@@ -17,21 +17,29 @@ def download_video():
 
         if choice == 'v':
             stream = yt.streams.get_highest_resolution()
-            file_type = 'video'
+            suffix = "_video"
         elif choice == 'a':
             stream = yt.streams.get_audio_only()
-            file_type = 'audio'
+            suffix = "_audio"
         else:
             print("Opción no válida. Intenta de nuevo.")
             continue
 
-        # Definir ruta de descarga dentro de la carpeta 'downloads'
-        download_path = os.path.join('downloads', f"{stream.title}.{file_type}")
+        # Asegurarse de que la carpeta 'downloads' exista
+        if not os.path.exists('downloads'):
+            os.makedirs('downloads')
+
+        # Formar el nombre del archivo, agregando un sufijo para diferenciar el tipo
+        extension = stream.mime_type.split('/')[-1]  # extraer la extensión basada en el tipo MIME
+        file_name = f"{stream.title}{suffix}.{extension}"  # asegurar que el punto esté antes de la extensión
+
+        # Reemplazar caracteres no permitidos en nombres de archivo
+        file_name = "".join([c for c in file_name if c.isalpha() or c.isdigit() or c in [' ', '.', '_', '-']]).rstrip()
 
         # Descargar el stream seleccionado
-        stream.download(output_path='downloads', filename=download_path)
+        stream.download(output_path='downloads', filename=file_name)
 
-        print(f"\nDescarga completada: {download_path}")
+        print(f"\nDescarga completada: {file_name}")
 
         respuesta = input("¿Quieres descargar otro video? (s/n): ")
         if respuesta.lower() != 's':
